@@ -33,15 +33,20 @@ To use the Job Email Classifier, follow these steps:
 
 2. Rename the demo.env file to .env and configure it with your OpenAI GPT-3 API key
 
-    ```mv demo.env .env ```
+    ```
+    mv demo.env .env ```
 
     - Open the .env file and replace YOUR_API_KEY with your actual GPT-3 API key
 
 3. Install Requirements
-    ```pip install -r requirements.txt```
 
-4. Run the application: 
-    ```python job_email_classifier.py "<SENDER>" "<SUBJECT>" "<EMAIL BODY 1>"...<EMAIL BODY N>```
+    ```
+    pip install -r requirements.txt```
+
+4. Run the application
+
+    ```
+    python job_email_classifier.py "<SENDER>" "<SUBJECT>" "<EMAIL BODY 1>"...<EMAIL BODY N>```
 
 ## Important Note
 
@@ -51,4 +56,4 @@ Feel free to contribute to and enhance this project. If you encounter any issues
 
 Happy job hunting. 🚀
 
-Feel Free to Customize it Further to add more classifier. 
+Feel Free to Customize it Further or Add more Classifiers. 
