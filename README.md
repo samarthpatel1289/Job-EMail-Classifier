@@ -28,8 +28,9 @@ To use the Job Email Classifier, follow these steps:
 
 1. Clone the repository to your local machine:
 
-   ```bash
-   git clone https://github.com/your-username/job-email-classifier.git```
+   ```
+   git clone https://github.com/samarthpatel1289/Job-EMail-Classifier.git
+   ```
 
 2. Rename the demo.env file to .env and configure it with your OpenAI GPT-3 API key
 
