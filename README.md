@@ -36,7 +36,7 @@ To use the Job Email Classifier, follow these steps:
     ```
     mv demo.env .env ```
 
-    - Open the .env file and replace YOUR_API_KEY with your actual GPT-3 API key
+- Open the .env file and replace YOUR_API_KEY with your actual GPT-3 API key
 
 3. Install Requirements
 
