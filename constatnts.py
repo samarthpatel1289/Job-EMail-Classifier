@@ -1,0 +1,7 @@
+JOB_APPLICATION_CONFIRMATION = "Job Applied Confirmation"
+JOB_REJECTION = "Job Rejection"
+JOB_UNDER_CONSIDERATION = "Job Under Consideration"
+JOB_OFFERED = "Job Offered"
+NEW_JOB_NOTIFICATION = "New Job Notification"
+NEW_JOB_TASK = "Job Task or To Do"
+NOT_JOB_SPECIFIC_EMAIL = "Not Job Specific Email"

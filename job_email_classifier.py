@@ -3,6 +3,7 @@ from openai import OpenAI
 import os
 import sys
 
+import constatnts as const
 
 def classify_email(sender_name, subject_line, *email_body_items):
     """
@@ -37,20 +38,22 @@ def classify_email(sender_name, subject_line, *email_body_items):
 
         # Create a list of possible classifications
         Classifications = [
-            os.getenv("JOB_APPLICATION_CONFIRMATION"),
-            os.getenv("JOB_REJECTION"),
-            os.getenv("JOB_OFFERED"),
-            os.getenv("NEW_JOB_NOTIFICATION"),
-            os.getenv("NOT_JOB_SPECIFIC_EMAIL"),
+            const.JOB_APPLICATION_CONFIRMATION,
+            const.JOB_REJECTION,
+            const.JOB_OFFERED,
+            const.NEW_JOB_NOTIFICATION,
+            const.NEW_JOB_TASK,
+            const.NOT_JOB_SPECIFIC_EMAIL
         ]
         content = f"""
         I want you to classify this email as one of the following: {', '.join(Classifications)}.
         Reply only with following words 
-        `{os.getenv('JOB_APPLICATION_CONFIRMATION')}`, 
-        `{os.getenv('JOB_REJECTION')}`, 
-        `{os.getenv('JOB_OFFERED')}`, 
-        `{os.getenv('NEW_JOB_NOTIFICATION')}` 
-        and `{os.getenv('NOT_JOB_SPECIFIC_EMAIL')}` "
+        `{const.JOB_APPLICATION_CONFIRMATION}`, 
+        `{const.JOB_REJECTION}`, 
+        `{const.JOB_OFFERED}`, 
+        `{const.NEW_JOB_NOTIFICATION}`,
+        `{const.NEW_JOB_TASK}`,
+        and `{const.NOT_JOB_SPECIFIC_EMAIL}` "
         """
 
         # Send the information to OpenAI
