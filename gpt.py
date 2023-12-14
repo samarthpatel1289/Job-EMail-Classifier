@@ -43,6 +43,15 @@ def classify_email(sender_name, subject_line, *email_body_items):
             os.getenv("NEW_JOB_NOTIFICATION"),
             os.getenv("NOT_JOB_SPECIFIC_EMAIL"),
         ]
+        content = f"""
+        I want you to classify this email as one of the following: {', '.join(Classifications)}.
+        Reply only with following words 
+        `{os.getenv('JOB_APPLICATION_CONFIRMATION')}`, 
+        `{os.getenv('JOB_REJECTION')}`, 
+        `{os.getenv('JOB_OFFERED')}`, 
+        `{os.getenv('NEW_JOB_NOTIFICATION')}` 
+        and `{os.getenv('NOT_JOB_SPECIFIC_EMAIL')}` "
+        """
 
         # Send the information to OpenAI
         completion = client.chat.completions.create(
@@ -50,7 +59,7 @@ def classify_email(sender_name, subject_line, *email_body_items):
             messages=[
                 {
                     "role": "user",
-                    "content": f"I want you to classify this email as one of the following: {', '.join(Classifications)}. Reply only with following words `{os.getenv('JOB_APPLICATION_CONFIRMATION')}`, `{os.getenv('JOB_REJECTION')}`, `{os.getenv('JOB_OFFERED')}`, `{os.getenv('NEW_JOB_NOTIFICATION')}` and `{os.getenv('NOT_JOB_SPECIFIC_EMAIL')}` ",
+                    "content": content,
                 },
                 {"role": "system", "content": email_content},
             ],
@@ -73,4 +82,3 @@ if __name__ == "__main__":
     # Classify the email and print the assistant's reply
     classified_email_type = classify_email(sender_name, subject_line, email_body)
     print(classified_email_type)
-
