@@ -34,7 +34,8 @@ To use the Job Email Classifier, follow these steps:
 2. Rename the demo.env file to .env and configure it with your OpenAI GPT-3 API key
 
     ```
-    mv demo.env .env ```
+    mv demo.env .env 
+    ```
 
 - Open the .env file and replace YOUR_API_KEY with your actual GPT-3 API key
 
