@@ -42,12 +42,14 @@ To use the Job Email Classifier, follow these steps:
 3. Install Requirements
 
     ```
-    pip install -r requirements.txt```
+    pip install -r requirements.txt
+    ```
 
 4. Run the application
 
     ```
-    python job_email_classifier.py "<SENDER>" "<SUBJECT>" "<EMAIL BODY 1>"...<EMAIL BODY N>```
+    python job_email_classifier.py "<SENDER>" "<SUBJECT>" "<EMAIL BODY 1>"...<EMAIL BODY N>
+    ```
 
 ## Important Note
 
