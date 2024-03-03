@@ -1,9 +1,7 @@
-from dotenv import load_dotenv
-from openai import OpenAI
-import os
 import sys
 
 import constatnts as const
+import largeLanguageModel as llm
 
 def classify_email(sender_name, subject_line, *email_body_items):
     """
@@ -20,56 +18,17 @@ def classify_email(sender_name, subject_line, *email_body_items):
     """
     email_body = " ".join(email_body_items)
     try:
-        # Load environment variables from .env file
-        load_dotenv()
-
-        # Access the OpenAI API key from the environment variable
-        api_key = os.getenv("OPENAI_API_KEY")
-
-        # Check if the API key is available
-        if not api_key:
-            return "Error"
-
-        # Initialize the OpenAI client with the API key
-        client = OpenAI(api_key=api_key)
-
         # Combine the sender name, subject line, and email body into one sentence
-        email_content = f"{sender_name}, {subject_line}: {email_body}"
+        email_content = f"From: {sender_name} Subject: {subject_line} Body: {email_body}"
 
-        # Create a list of possible classifications
-        Classifications = [
-            const.JOB_APPLICATION_CONFIRMATION,
-            const.JOB_REJECTION,
-            const.JOB_OFFERED,
-            const.NEW_JOB_NOTIFICATION,
-            const.NEW_JOB_TASK,
-            const.NOT_JOB_SPECIFIC_EMAIL
-        ]
         content = f"""
-        I want you to classify this email as one of the following: {', '.join(Classifications)}.
-        Reply only with following words 
-        `{const.JOB_APPLICATION_CONFIRMATION}`, 
-        `{const.JOB_REJECTION}`, 
-        `{const.JOB_OFFERED}`, 
-        `{const.NEW_JOB_NOTIFICATION}`,
-        `{const.NEW_JOB_TASK}`,
-        and `{const.NOT_JOB_SPECIFIC_EMAIL}` "
+        You are job email classifiers, I want you to classify this email as one of the following: {', '.join(const.Classifications)}. 
+        Also Find following details from data provided: Company Name and Job Role. 
+        If company name not found return `unknown name`.
+        If job role not found return `software engineer`.
+        Reply only with comma separated values of classified type, company name, job role.
         """
-
-        # Send the information to OpenAI
-        completion = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {
-                    "role": "user",
-                    "content": content,
-                },
-                {"role": "system", "content": email_content},
-            ],
-        )
-
-        # Get the assistant's reply
-        assistant_reply = completion.choices[0].message.content
+        assistant_reply = llm.request(content, email_content)
 
         # Return the assistant's reply with the classified email type
         return assistant_reply

@@ -88,7 +88,6 @@ def find_and_update_status(service, spreadsheet_id, range_name, company, positio
     # If no matching entry is found after searching all rows
     print(f"No matching entry found for Company: '{company}', Position: '{position}' with Status 'Applied'.")
 
-
 # Main function to parse arguments and call other functions
 def main():
     parser = argparse.ArgumentParser(description="Update Google Sheets Data")
@@ -114,7 +113,7 @@ def main():
     args = parser.parse_args()
 
     # Initialize the Sheets API
-    SERVICE_ACCOUNT_FILE = '/Users/samarthpatel/Desktop/mailScripts/python/samarth_cred.json'
+    SERVICE_ACCOUNT_FILE = const.CREDENTIAL_PATH
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
     service = initialize_sheets_api(SERVICE_ACCOUNT_FILE, SCOPES)
 
