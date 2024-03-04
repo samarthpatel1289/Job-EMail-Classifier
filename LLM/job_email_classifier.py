@@ -1,6 +1,5 @@
 import sys
-
-import constatnts as const
+import constants as const
 import largeLanguageModel as llm
 
 def classify_email(sender_name, subject_line, *email_body_items):
@@ -22,8 +21,8 @@ def classify_email(sender_name, subject_line, *email_body_items):
         email_content = f"From: {sender_name} Subject: {subject_line} Body: {email_body}"
 
         content = f"""
-        You are job email classifiers, I want you to classify this email as one of the following: {', '.join(const.Classifications)}. 
-        Also Find following details from data provided: Company Name and Job Role. 
+        You are job email classifiers, I want you to classify this email as one of the following: {', '.join(const.Classifications)}.
+        Also Find following details from data provided: Company Name and Job Role.
         If company name not found return `unknown name`.
         If job role not found return `software engineer`.
         Reply only with comma separated values of classified type, company name, job role.

@@ -1,7 +1,9 @@
 import argparse
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
-import constatnts as const
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 # Initialize the Sheets API client
 def initialize_sheets_api(service_account_file, scopes):
@@ -17,7 +19,7 @@ def find_next_empty_row(service, spreadsheet_id, sheet_name):
         spreadsheetId=spreadsheet_id, range=range_name).execute()
     values = result.get('values', [])
 
-    next_empty_row = len(values) + 1    
+    next_empty_row = len(values) + 1
     return next_empty_row
 
 def write_data_next_empty_row(service, spreadsheet_id, sheet_name, company, position, resume):
@@ -66,22 +68,22 @@ def find_and_update_status(service, spreadsheet_id, range_name, company, positio
             actual_status = row[status_index].lower()
 
             # Check if the current row matches the criteria
-            if (actual_company == company.lower() and 
+            if (actual_company == company.lower() and
                 actual_position == position.lower() and
                 actual_status == desired_status):
-                
+
                 # Match found, update the status in this row
                 update_range = f"{range_name.split('!')[0]}!{chr(65 + status_index)}{idx + 1}"
                 body = {
                     'values': [[new_status]]
                 }
-                
+
                 service.spreadsheets().values().update(
                     spreadsheetId=spreadsheet_id,
                     range=update_range,
                     valueInputOption='USER_ENTERED',
                     body=body).execute()
-                
+
                 print(f"Status updated for {company}, {position} in cell {update_range}.")
                 return
 
@@ -92,7 +94,7 @@ def find_and_update_status(service, spreadsheet_id, range_name, company, positio
 def main():
     parser = argparse.ArgumentParser(description="Update Google Sheets Data")
     subparsers = parser.add_subparsers(dest='action', help="Action to perform")
-  
+
     # Global arguments
     parser.add_argument('--spreadsheet_id', required=True, help="The ID of the Google Spreadsheet")
     parser.add_argument('--sheet_name', default='Sheet1', help="Name of the worksheet")
@@ -113,13 +115,13 @@ def main():
     args = parser.parse_args()
 
     # Initialize the Sheets API
-    SERVICE_ACCOUNT_FILE = const.CREDENTIAL_PATH
+    SERVICE_ACCOUNT_FILE = os.getenv("CREDENTIAL_PATH")
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
     service = initialize_sheets_api(SERVICE_ACCOUNT_FILE, SCOPES)
 
     if args.action == 'write':
         write_data_next_empty_row(service, args.spreadsheet_id, args.sheet_name, args.company, args.position, args.resume)
-        
+
     elif args.action == 'update':
         find_and_update_status(service, args.spreadsheet_id, "Sheet1!A1:E", args.company, args.position, args.status)
 
