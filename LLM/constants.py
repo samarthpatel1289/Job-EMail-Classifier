@@ -14,5 +14,3 @@ Classifications = [
     NEW_JOB_TASK,
     NOT_JOB_SPECIFIC_EMAIL
 ]
-
-CREDENTIAL_PATH = "/Users/samarthpatel/Desktop/mailScripts/python/samarth_cred.json"

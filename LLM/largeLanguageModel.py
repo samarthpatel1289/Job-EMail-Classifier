@@ -3,7 +3,7 @@ from openai import OpenAI
 import os
 import sys
 
-import constatnts as const
+import constants as const
 
 def request(user_message, system_message):
     """

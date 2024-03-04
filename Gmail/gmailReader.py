@@ -7,35 +7,17 @@ import email
 import datetime
 import pickle
 import os.path
+import os
+
 
 # If modifying these SCOPES, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 EMAIL_LIST = []
 
-def get_gmail_service():
-    creds = None
-    # The file token.pickle stores the user's access and refresh tokens.
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
-            creds = pickle.load(token)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file('samarth_email_cred.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run.
-        with open('token.pickle', 'wb') as token:
-            pickle.dump(creds, token)
-
-    service = build('gmail', 'v1', credentials=creds)
-    return service
-
-def get_email_details(service, message_id):
+def get_email_details(service, user_email, message_id):
     # Get a specific message with full format to get the headers
-    msg = service.users().messages().get(userId='me', id=message_id, format='full').execute()
+    msg = service.users().messages().get(userId=user_email, id=message_id, format='full').execute()
 
     # Fetch headers from the message and parse the required data
     headers = msg['payload']['headers']
@@ -66,26 +48,41 @@ def get_email_details(service, message_id):
     return email_sender, email_subject, email_body
 
 
-def check_emails(service):
-    now = datetime.datetime.now()  # Get the current UTC time
-    one_hour_ago = now - datetime.timedelta(hours=24)
+def get_gmail_service(email):
+    pickle_token = f"tocken_{email}.pickle"
+    creds = None
+    # The file token.pickle stores the user's access and refresh tokens.
+    if os.path.exists(pickle_token):
+        with open(pickle_token, 'rb') as token:
+            creds = pickle.load(token)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(constants.EMAIL_CREDENTIAL_PATH, SCOPES)
+            creds = flow.run_local_server(port=0)
+        with open(pickle_token, 'wb') as token:
+            pickle.dump(creds, token)
+    return build('gmail', 'v1', credentials=creds)
 
-    # Convert to UNIX timestamp (in seconds) and format the query string
-    query = f'after:{int(one_hour_ago.timestamp())}'
+def check_emails(service, user_email):
+    now = datetime.datetime.now()
+    one_day_ago = now - datetime.timedelta(hours=24)
+    query = f'after:{int(one_day_ago.timestamp())}'
 
-    # Request a list of all messages in the Inbox that match the query
-    response = service.users().messages().list(userId='me', q=query).execute()  # Removed labelIds parameter
-    # response = service.users().messages().list(userId='me').execute()
+    response = service.users().messages().list(userId=user_email, q=query).execute()
 
-    messages = []
-    if 'messages' in response:
-        messages.extend(response['messages'])
+    messages = response.get('messages', [])
 
-    # Keep fetching messages if there are more than one page of results
-    while 'nextPageToken' in response:
-        page_token = response['nextPageToken']
-        response = service.users().messages().list(userId='me', q=query, pageToken=page_token).execute()
-        messages.extend(response['messages'])
+    email_list = []
+    for message in messages:
+        email_sender, email_subject, email_body = get_email_details(service, user_email, message['id'])
+        email_list.append({
+            "sender": email_sender,
+            "subject": email_subject,
+            "email": email_body
+        })
+    return email_list
 
     if not messages:
         print("No emails found.")
@@ -101,9 +98,11 @@ def check_emails(service):
             })
 
 if __name__ == '__main__':
-    service = get_gmail_service()
-    label_response = service.users().labels().list(userId='me').execute()
-    check_emails(service)
-    for mails in EMAIL_LIST:
-        print(mails.get("sender"))
-        print("-------------------")
+    user_emails = ["samarthp1134@gmail.com", "patelsamarth787@gmail.com"]
+    for user_email in user_emails:
+        service = get_gmail_service(user_email)
+        email_list = check_emails(service, user_email)
+        print(f"Emails for: {user_email}")
+        for email in email_list:
+            print(email.get("sender"))
+            print("-------------------")
