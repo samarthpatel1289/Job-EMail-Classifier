@@ -3,13 +3,38 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from dotenv import load_dotenv
 import os
+import pickle
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from google.auth.transport.requests import Request
+import os
 load_dotenv()
 
 # Initialize the Sheets API client
-def initialize_sheets_api(service_account_file, scopes):
-    credentials = service_account.Credentials.from_service_account_file(
-        service_account_file, scopes=scopes)
-    service = build('sheets', 'v4', credentials=credentials)
+def initialize_sheets_api(email):
+    SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+    creds = None
+    token_file = f"token_sheet_{email}.pickle"
+
+    # Load previously saved credentials if they exist
+    if os.path.exists(token_file):
+        with open(token_file, 'rb') as token:
+            creds = pickle.load(token)
+
+    # If credentials do not exist or are invalid, ask the user to log in
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                os.getenv("CREDENTIAL_PATH"), SCOPES)
+            creds = flow.run_local_server(port=0)
+
+        # Save the credentials for the next run
+        with open(token_file, 'wb') as token:
+            pickle.dump(creds, token)
+
+    service = build('sheets', 'v4', credentials=creds)
     return service
 
 def find_next_empty_row(service, spreadsheet_id, sheet_name):
@@ -39,7 +64,7 @@ def write_data_next_empty_row(service, spreadsheet_id, sheet_name, company, posi
     result = service.spreadsheets().values().append(
         spreadsheetId=spreadsheet_id, range=range_name,
         valueInputOption='USER_ENTERED', insertDataOption='INSERT_ROWS', body=body).execute()
-    print(f"{result.get('updates').get('updatedCells')} cells updated.")
+    print(f"        {result.get('updates').get('updatedCells')} cells updated.")
 
 def find_and_update_status(service, spreadsheet_id, range_name, company, position, new_status):
     # Read the data from the sheet
@@ -84,11 +109,11 @@ def find_and_update_status(service, spreadsheet_id, range_name, company, positio
                     valueInputOption='USER_ENTERED',
                     body=body).execute()
 
-                print(f"Status updated for {company}, {position} in cell {update_range}.")
+                print(f"        Status updated for {company}, {position} in cell {update_range}.")
                 return
 
     # If no matching entry is found after searching all rows
-    print(f"No matching entry found for Company: '{company}', Position: '{position}' with Status 'Applied'.")
+    print(f"        No matching entry found for Company: '{company}', Position: '{position}' with Status 'Applied'.")
 
 # Main function to parse arguments and call other functions
 def main():
@@ -117,7 +142,7 @@ def main():
     # Initialize the Sheets API
     SERVICE_ACCOUNT_FILE = os.getenv("CREDENTIAL_PATH")
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-    service = initialize_sheets_api(SERVICE_ACCOUNT_FILE, SCOPES)
+    service = initialize_sheets_api("patelsamarth787@gmail.com")
 
     if args.action == 'write':
         write_data_next_empty_row(service, args.spreadsheet_id, args.sheet_name, args.company, args.position, args.resume)

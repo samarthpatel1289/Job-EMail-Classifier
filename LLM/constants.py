@@ -1,3 +1,4 @@
+
 JOB_APPLICATION_CONFIRMATION = "Job Applied Confirmation"
 JOB_REJECTION = "Job Rejection"
 JOB_UNDER_CONSIDERATION = "Job Under Consideration"

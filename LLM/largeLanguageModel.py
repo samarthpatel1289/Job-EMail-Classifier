@@ -3,8 +3,6 @@ from openai import OpenAI
 import os
 import sys
 
-import constants as const
-
 def request(user_message, system_message):
     """
     Classifies an email using OpenAI's GPT-3 model.
