@@ -8,6 +8,9 @@ import datetime
 import pickle
 import os.path
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 # If modifying these SCOPES, delete the file token.pickle.
@@ -59,7 +62,7 @@ def get_gmail_service(email):
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(constants.EMAIL_CREDENTIAL_PATH, SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file(os.getenv("CREDENTIAL_PATH"), SCOPES)
             creds = flow.run_local_server(port=0)
         with open(pickle_token, 'wb') as token:
             pickle.dump(creds, token)
@@ -104,5 +107,5 @@ if __name__ == '__main__':
         email_list = check_emails(service, user_email)
         print(f"Emails for: {user_email}")
         for email in email_list:
-            print(email.get("sender"))
+            print(email)
             print("-------------------")

@@ -1,6 +1,6 @@
 import sys
-import constants as const
-import largeLanguageModel as llm
+from LLM import largeLanguageModel as llm
+from LLM import constants as const
 
 def classify_email(sender_name, subject_line, *email_body_items):
     """
